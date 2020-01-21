@@ -1,20 +1,20 @@
 import os
 import secrets
-from PIL import Image
+# from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from app.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
-from request import get_quotes
+# from request import get_quotes
 
 
 @app.route("/")
 @app.route("/home")
 def home():
-    newquotes=get_quotes()
+    # newquotes=get_quotes()
     posts = Post.query.all()
-    return render_template('home.html', posts=posts,newquotes=newquotes)
+    return render_template('home.html', posts=posts)
 
 
 @app.route("/about")
