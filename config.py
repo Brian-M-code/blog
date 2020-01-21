@@ -22,12 +22,18 @@ class ProdConfig(Config):
     '''
     Production  configuration class
     '''
-    pass
+    
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    
 class DevConfig(Config):
     '''
     Development  configuration class
     '''
+    
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://mutumas:Mutuma1234@localhost/blog'
     DEBUG = True
+    ENV = 'development'
+    
 config_options = {
     'production' : ProdConfig,
     'development' : DevConfig
