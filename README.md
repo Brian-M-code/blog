@@ -29,7 +29,7 @@ Brian Mutuma
 * Python version 3.6 Flask Heroku Gunicorn Internet connection
 
 ### screenshot
-<img src="app/static/images/blog.png">
+<img src="app/static/blog.png">
 
 # Live Link
 
