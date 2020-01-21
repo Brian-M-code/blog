@@ -1,5 +1,5 @@
 # Blogger
-* The project was done using python3.6
+* The project was done using python3.6 + flask
 
 # Description
 An application that will make your time count,by posting blogs that wil change other some elses life. 
@@ -44,10 +44,7 @@ Brian Mutuma
 
 * On your terminal, run the command '$ pip freeze to confirm that you have all the requirements'
 
-* Run the command '$ python run.py'
-
-# Known Bugs
-* The app has no current bugs
+* Run the command '$ python3.6 manage.py server'
 
 # Support
 * If you need any clarification on any aspect, feel free to reach me via email at orengowendy594@gmail.com
