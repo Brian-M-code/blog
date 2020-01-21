@@ -47,7 +47,7 @@ Brian Mutuma
 * Run the command '$ python3.6 manage.py server'
 
 # Support
-* If you need any clarification on any aspect, feel free to reach me via email at orengowendy594@gmail.com
+* If you need any clarification on any aspect, feel free to reach me via email at mutuma.brian@yahoo.com
 
 # License
 
