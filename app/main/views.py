@@ -2,9 +2,8 @@ from flask import (render_template, request, redirect,
                    url_for, abort)
 from . import main
 from ..models import User, Post, Quotes
-from flask_login import login_required, current_user
-# from .forms import (UpdateProfile, PostForm, 
-                    # CommentForm, UpdatePostForm)
+from flask_login import login_required
+# from .forms import (UpdateProfile, PostForm, UpdatePostForm)
 from datetime import datetime
 from .. import db
 # from ..request import get_quotes
@@ -12,29 +11,29 @@ from .. import db
 
 @main.route("/", methods = ["GET", "POST"])
 def index():
-    posts = Post.get_all_posts()
+    Posts = Post.get_all_posts()
     # quote = get_quotes()
 
-    if request.method == "POST":
+    if request.method == "GET":
         # new_sub = Subscribers(email = request.form.get("subscriber"))
         # db.session.add(new_sub)
         # db.session.commit()
         # welcome_message("Thank you for subscribing to the Avache blog", 
         #                 "email/welcome", new_sub.email)
-        return render_template("index.html",Posts = Posts,Quotes = Quotes)
+        return render_template("home.html",Posts = Posts)
 
 @main.route("/post/<int:id>", methods = ["POST", "GET"])
 def post(id):
     post = Post.query.filter_by(id = id).first()
-    comments = Comment.query.filter_by(post_id = id).all()
+    # comments = Comment.query.filter_by(post_id = id).all()
     
     if current_user.is_authenticated:
-        comment_alias = current_user.username
-        new_comment = Comment(comment = comment, 
-                            comment_at = datetime.now(),
-                            comment_by = comment_alias,
-                            post_id = id)
-        new_comment.save_comment()
+        # comment_alias = current_user.username
+        # new_comment = Comment(comment = comment, 
+        #                     comment_at = datetime.now(),
+        #                     comment_by = comment_alias,
+        #                     post_id = id)
+        # new_comment.save_comment()
         return redirect(url_for("main.post", id = post.id))
 
     return render_template("post.html",
@@ -93,9 +92,9 @@ def profile(id):
     posts = Post.query.filter_by(user_id = id).all()
 
     if request.method == "POST":
-        new_sub = Subscribers(email = request.form.get("subscriber"))
-        db.session.add(new_sub)
-        db.session.commit()
+        # new_sub = Subscribers(email = request.form.get("subscriber"))
+        # db.session.add(new_sub)
+        # db.session.commit()
         welcome_message("Thank you for visiting to the Blog")
 
     return render_template("profile/profile.html",
