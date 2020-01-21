@@ -4,7 +4,7 @@ from . import main
 from ..models import User, Post, Quotes
 from flask_login import login_required, current_user
 # from .forms import (UpdateProfile, PostForm, 
-                    CommentForm, UpdatePostForm)
+                    # CommentForm, UpdatePostForm)
 from datetime import datetime
 from .. import db
 # from ..request import get_quotes
@@ -13,32 +13,23 @@ from .. import db
 @main.route("/", methods = ["GET", "POST"])
 def index():
     posts = Post.get_all_posts()
-    quote = get_quote()
+    # quote = get_quotes()
 
     if request.method == "POST":
-        new_sub = Subscribers(email = request.form.get("subscriber"))
-        db.session.add(new_sub)
-        db.session.commit()
-        welcome_message("Thank you for subscribing to the Avache blog", 
-                        "email/welcome", new_sub.email)
-    return render_template("index.html",
-                            posts = posts,
-                            quote = quote)
+        # new_sub = Subscribers(email = request.form.get("subscriber"))
+        # db.session.add(new_sub)
+        # db.session.commit()
+        # welcome_message("Thank you for subscribing to the Avache blog", 
+        #                 "email/welcome", new_sub.email)
+        return render_template("index.html",Posts = Posts,Quotes = Quotes)
 
 @main.route("/post/<int:id>", methods = ["POST", "GET"])
 def post(id):
     post = Post.query.filter_by(id = id).first()
     comments = Comment.query.filter_by(post_id = id).all()
-    comment_form = CommentForm()
-    comment_count = len(comments)
-
-    if comment_form.validate_on_submit():
-        comment = comment_form.comment.data
-        comment_form.comment.data = ""
-        comment_alias = comment_form.alias.data
-        comment_form.alias.data = ""
-        if current_user.is_authenticated:
-            comment_alias = current_user.username
+    
+    if current_user.is_authenticated:
+        comment_alias = current_user.username
         new_comment = Comment(comment = comment, 
                             comment_at = datetime.now(),
                             comment_by = comment_alias,
@@ -47,27 +38,8 @@ def post(id):
         return redirect(url_for("main.post", id = post.id))
 
     return render_template("post.html",
-                            post = post,
-                            comments = comments,
-                            comment_form = comment_form,
-                            comment_count = comment_count)
-
-@main.route("/post/<int:id>/<int:comment_id>/delete")
-def delete_comment(id, comment_id):
-    post = Post.query.filter_by(id = id).first()
-    comment = Comment.query.filter_by(id = comment_id).first()
-    db.session.delete(comment)
-    db.session.commit()
-    return redirect(url_for("main.post", id = post.id))
-
-@main.route("/post/<int:id>/<int:comment_id>/favourite")
-def fav_comment(id, comment_id):
-    post = Post.query.filter_by(id = id).first()
-    comment = Comment.query.filter_by(id = comment_id).first()
-    comment.like_count = 1
-    db.session.add(comment)
-    db.session.commit()
-    return redirect(url_for('main.post', id = post.id))
+                            post = post)
+                            
 
 @main.route("/post/<int:id>/update", methods = ["POST", "GET"])
 @login_required
@@ -109,11 +81,7 @@ def new_post():
                         post_by = current_user.username,
                         user_id = current_user.id)
         new_post.save_post()
-        subs = Subscribers.query.all()
-        for sub in subs:
-            notification_message(post_title, 
-                            "email/notification", sub.email, new_post = new_post)
-            pass
+        
         return redirect(url_for("main.post", id = new_post.id))
     
     return render_template("new_post.html",
@@ -128,8 +96,7 @@ def profile(id):
         new_sub = Subscribers(email = request.form.get("subscriber"))
         db.session.add(new_sub)
         db.session.commit()
-        welcome_message("Thank you for subscribing to the Avache blog", 
-                        "email/welcome", new_sub.email)
+        welcome_message("Thank you for visiting to the Blog")
 
     return render_template("profile/profile.html",
                             user = user,
