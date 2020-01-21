@@ -1,42 +1,35 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
-from flask_bootstrap import Bootstrap
-
-from config import config_options
+from flask_login import LoginManager
+from flask_mail import Mail
+from flaskblog.config import Config
 
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = 'login'
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
-bootstrap = Bootstrap()
+mail = Mail()
 
 
-def create_app(config_name):
-    
+def create_app(config_class=Config):
     app = Flask(__name__)
+    app.config.from_object(Config)
 
-    # Creating the app configurations
-    app.config.from_object(config_options[config_name])
-
-    # Initializing flask extensions
     db.init_app(app)
+    bcrypt.init_app(app)
     login_manager.init_app(app)
-    bootstrap.init_app(app)
-    
+    mail.init_app(app)
 
-    # Registering the main app Blueprint
-    from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
-
-    # Registering auth blueprint
-    from .authentication import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix = "/authenticate")
-    
-    # # Configure UploadSet
-    # configure_uploads(app, photos)
+    from flaskblog.users.routes import users
+    from flaskblog.posts.routes import posts
+    from flaskblog.main.routes import main
+    from flaskblog.errors.handlers import errors
+    app.register_blueprint(users)
+    app.register_blueprint(posts)
+    app.register_blueprint(main)
+    app.register_blueprint(errors)
 
     return app
-# from app import routes

@@ -1,44 +1,74 @@
 from flask import (render_template, request, redirect, 
                    url_for, abort)
 from . import main
-from ..models import User, Post, Quotes
-from flask_login import login_required
-# from .forms import (UpdateProfile, PostForm, UpdatePostForm)
+from ..models import User, Comment, Post, Subscribers
+from flask_login import login_required, current_user
+from .forms import (UpdateProfile, PostForm, 
+                    CommentForm, UpdatePostForm)
 from datetime import datetime
+import bleach
 from .. import db
-# from ..request import get_quotes
-
+from ..requests import get_quote
+from ..email import welcome_message, notification_message
 
 @main.route("/", methods = ["GET", "POST"])
 def index():
-    Posts = Post.get_all_posts()
-    # quote = get_quotes()
+    posts = Post.get_all_posts()
+    quote = get_quote()
 
-    if request.method == "GET":
-        # new_sub = Subscribers(email = request.form.get("subscriber"))
-        # db.session.add(new_sub)
-        # db.session.commit()
-        # welcome_message("Thank you for subscribing to the Avache blog", 
-        #                 "email/welcome", new_sub.email)
-        return render_template("home.html",Posts = Posts)
+    if request.method == "POST":
+        new_sub = Subscribers(email = request.form.get("subscriber"))
+        db.session.add(new_sub)
+        db.session.commit()
+        welcome_message("Thank you for subscribing to the Avache blog", 
+                        "email/welcome", new_sub.email)
+    return render_template("index.html",
+                            posts = posts,
+                            quote = quote)
 
 @main.route("/post/<int:id>", methods = ["POST", "GET"])
 def post(id):
     post = Post.query.filter_by(id = id).first()
-    # comments = Comment.query.filter_by(post_id = id).all()
-    
-    if current_user.is_authenticated:
-        # comment_alias = current_user.username
-        # new_comment = Comment(comment = comment, 
-        #                     comment_at = datetime.now(),
-        #                     comment_by = comment_alias,
-        #                     post_id = id)
-        # new_comment.save_comment()
+    comments = Comment.query.filter_by(post_id = id).all()
+    comment_form = CommentForm()
+    comment_count = len(comments)
+
+    if comment_form.validate_on_submit():
+        comment = comment_form.comment.data
+        comment_form.comment.data = ""
+        comment_alias = comment_form.alias.data
+        comment_form.alias.data = ""
+        if current_user.is_authenticated:
+            comment_alias = current_user.username
+        new_comment = Comment(comment = comment, 
+                            comment_at = datetime.now(),
+                            comment_by = comment_alias,
+                            post_id = id)
+        new_comment.save_comment()
         return redirect(url_for("main.post", id = post.id))
 
     return render_template("post.html",
-                            post = post)
-                            
+                            post = post,
+                            comments = comments,
+                            comment_form = comment_form,
+                            comment_count = comment_count)
+
+@main.route("/post/<int:id>/<int:comment_id>/delete")
+def delete_comment(id, comment_id):
+    post = Post.query.filter_by(id = id).first()
+    comment = Comment.query.filter_by(id = comment_id).first()
+    db.session.delete(comment)
+    db.session.commit()
+    return redirect(url_for("main.post", id = post.id))
+
+@main.route("/post/<int:id>/<int:comment_id>/favourite")
+def fav_comment(id, comment_id):
+    post = Post.query.filter_by(id = id).first()
+    comment = Comment.query.filter_by(id = comment_id).first()
+    comment.like_count = 1
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('main.post', id = post.id))
 
 @main.route("/post/<int:id>/update", methods = ["POST", "GET"])
 @login_required
@@ -80,7 +110,11 @@ def new_post():
                         post_by = current_user.username,
                         user_id = current_user.id)
         new_post.save_post()
-        
+        subs = Subscribers.query.all()
+        for sub in subs:
+            notification_message(post_title, 
+                            "email/notification", sub.email, new_post = new_post)
+            pass
         return redirect(url_for("main.post", id = new_post.id))
     
     return render_template("new_post.html",
@@ -92,10 +126,11 @@ def profile(id):
     posts = Post.query.filter_by(user_id = id).all()
 
     if request.method == "POST":
-        # new_sub = Subscribers(email = request.form.get("subscriber"))
-        # db.session.add(new_sub)
-        # db.session.commit()
-        welcome_message("Thank you for visiting to the Blog")
+        new_sub = Subscribers(email = request.form.get("subscriber"))
+        db.session.add(new_sub)
+        db.session.commit()
+        welcome_message("Thank you for subscribing to the Avache blog", 
+                        "email/welcome", new_sub.email)
 
     return render_template("profile/profile.html",
                             user = user,

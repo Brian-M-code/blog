@@ -22,7 +22,7 @@ def register():
        
         return redirect(url_for("auth.login"))
     title = "Sign Up to 60 Seconds"
-    return render_template("auth/signup.html", 
+    return render_template("templates/signup.html", 
                             signup_form = signup_form,
                             title = title)
 
@@ -33,12 +33,12 @@ def login():
         user = User.query.filter_by(email = login_form.email.data).first()
         if user is not None and user.verify_password(login_form.password.data):
             login_user(user, login_form.remember.data)
-            return redirect(request.args.get("next") or url_for("main.index"))
+            return redirect(request.args.get("next") or url_for("main.home"))
 
         flash("Invalid Username or Password")
     
     title = "Login to 60 Seconds"
-    return render_template("auth/login.html",
+    return render_template("templates/login.html",
                             login_form = login_form,
                             title = title)
 
