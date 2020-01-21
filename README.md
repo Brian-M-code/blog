@@ -28,6 +28,9 @@ Brian Mutuma
 # Setup/Installation Requirements
 * Python version 3.6 Flask Heroku Gunicorn Internet connection
 
+### screenshot
+
+
 # Live Link
 
 * https://brayo-blog.herokuapp.com/
