@@ -28,4 +28,23 @@ class Post(db.Model):
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}')"
+    def save_post(self):
+        '''
+        Function that saves posts
+        '''
+        db.session.add(self)
+        db.session.commit()
+    @classmethod
+    def get_all_posts(cls):
+        '''
+        Function that queries the database and returns all the posts
+        '''
+        return Post.query.all()
+    @classmethod
+    def delete_post(cls,id):
+        '''
+        '''
+        db.session.delete()
+        db.session.commit()
+
 
