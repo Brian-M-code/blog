@@ -30,7 +30,7 @@ Brian Mutuma
 
 # Live Link
 
-*https://ace-blog.herokuapp.com 
+* https://brayo-blog.herokuapp.com/
 
 # Installation Process
 * Navigate to my git repository https://github.com/brian-m-code/blog.git
