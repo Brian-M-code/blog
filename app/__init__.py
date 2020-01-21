@@ -7,8 +7,8 @@ from flask_bootstrap import Bootstrap
 from config import config_options
 
 
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
+db = SQLAlchemy()
+login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 bootstrap = Bootstrap()
@@ -24,7 +24,6 @@ def create_app(config_name):
     # Initializing flask extensions
     db.init_app(app)
     login_manager.init_app(app)
-    mail.init_app(app)
     bootstrap.init_app(app)
     
 
