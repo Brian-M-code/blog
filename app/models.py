@@ -47,4 +47,12 @@ class Post(db.Model):
         db.session.delete()
         db.session.commit()
 
+class Quotes:
+    '''
+    News class to Quotes objects
+    '''
+    def __init__(self,author,quote,permalink):
+        self.author = author
+        self.quote = quote
+        self.permalink = permalink
 
