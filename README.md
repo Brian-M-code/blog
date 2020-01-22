@@ -1,4 +1,4 @@
-# Blogger
+# My Blog
 * The project was done using python3.6 + flask
 
 # Description
